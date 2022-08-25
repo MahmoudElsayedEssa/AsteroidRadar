@@ -19,10 +19,19 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding = FragmentMainBinding.inflate(inflater)
-        binding.lifecycleOwner = this
+        binding.apply {
+            lifecycleOwner = requireActivity()
+            viewModel = viewModel
+        }
 
-        binding.viewModel = viewModel
 
+        val adapter = AsteroidAdapter(AsteroidAdapterListener {})
+
+        binding.asteroidRecycler.adapter = adapter
+
+        viewModel.asteroids.observe(viewLifecycleOwner) {
+            adapter.submitList(it)
+        }
 
 
         return binding.root
