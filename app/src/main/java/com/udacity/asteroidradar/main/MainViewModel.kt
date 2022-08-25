@@ -9,6 +9,9 @@ class MainViewModel : ViewModel() {
     private val _asteroids = MutableLiveData<MutableList<Asteroid>>()
     val asteroids: LiveData<MutableList<Asteroid>> get() = _asteroids
 
+    private val _navigateToDetailAsteroid = MutableLiveData<Asteroid?>()
+    val navigateToDetailAsteroid: MutableLiveData<Asteroid?> get() = _navigateToDetailAsteroid
+    
     init {
         _asteroids.value = mutableListOf(
             Asteroid(
@@ -32,5 +35,13 @@ class MainViewModel : ViewModel() {
                 relativeVelocity = 8.9
             )
         )
+    }
+
+    fun onAsteroidNavigated() {
+        _navigateToDetailAsteroid.value = null
+    }
+
+    fun onAsteroidClicked(asteroid:Asteroid){
+        _navigateToDetailAsteroid.value = asteroid
     }
 }
