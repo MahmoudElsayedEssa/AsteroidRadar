@@ -8,8 +8,14 @@ import com.udacity.asteroidradar.Asteroid
 @Dao
 interface AsteroidDoe {
 
-    @Query("select * from asteroid_table")
+    @Query("select * from asteroid_table ORDER BY closeApproachDate DESC")
     fun getAsteroids(): LiveData<List<Asteroid>>
+
+    @Query("SELECT * FROM asteroid_table WHERE closeApproachDate = :startDate ORDER BY closeApproachDate DESC")
+    fun getAsteroidsDay(startDate: String): LiveData<List<Asteroid>>
+
+    @Query("SELECT * FROM asteroid_table WHERE closeApproachDate BETWEEN :startDate AND :endDate ORDER BY closeApproachDate DESC")
+    fun getAsteroidsDate(startDate: String, endDate: String): LiveData<List<Asteroid>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg asteroids: Asteroid)
@@ -36,3 +42,35 @@ fun getDatabase(context: Context): AsteroidDatabase {
     }
     return INSTANCE
 }
+
+fun List<Asteroid>.asDatabaseModel(): Array<Asteroid> {
+    return map {
+        Asteroid(
+            id = it.id,
+            codename = it.codename,
+            closeApproachDate = it.closeApproachDate,
+            absoluteMagnitude = it.absoluteMagnitude,
+            estimatedDiameter = it.estimatedDiameter,
+            relativeVelocity = it.relativeVelocity,
+            distanceFromEarth = it.distanceFromEarth,
+            isPotentiallyHazardous = it.isPotentiallyHazardous
+        )
+    }.toTypedArray()
+}
+
+fun Array<Asteroid>.asDomainModel(): List<Asteroid> {
+    return map {
+        Asteroid(
+            id = it.id,
+            codename = it.codename,
+            closeApproachDate = it.closeApproachDate,
+            absoluteMagnitude = it.absoluteMagnitude,
+            estimatedDiameter = it.estimatedDiameter,
+            relativeVelocity = it.relativeVelocity,
+            distanceFromEarth = it.distanceFromEarth,
+            isPotentiallyHazardous = it.isPotentiallyHazardous
+        )
+    }
+}
+
+

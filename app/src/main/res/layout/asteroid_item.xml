@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="asteroid"
             type="com.udacity.asteroidradar.Asteroid" />
+
         <variable
             name="clickListener"
             type="com.udacity.asteroidradar.main.AsteroidAdapterListener" />
@@ -15,8 +17,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> clickListener.onClick(asteroid)}"
-        >
+        android:onClick="@{() -> clickListener.onClick(asteroid)}">
 
 
         <TextView
@@ -27,26 +28,23 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text="@{asteroid.codename}"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/default_text_color"
             app:layout_constraintEnd_toStartOf="@+id/potentially_hazardous_state"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="name" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
             android:text="@{asteroid.closeApproachDate}"
-            android:textColor="#FFFFFF"
-
+            android:textColor="@color/default_text_color"
             app:layout_constraintEnd_toStartOf="@+id/potentially_hazardous_state"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/codename"
             app:layout_constraintTop_toBottomOf="@+id/codename"
-            tools:text="date" />
+            />
 
         <ImageView
             android:id="@+id/potentially_hazardous_state"

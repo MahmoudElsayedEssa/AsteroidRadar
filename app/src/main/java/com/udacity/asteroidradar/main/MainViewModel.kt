@@ -1,22 +1,26 @@
 package com.udacity.asteroidradar.main
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import android.util.Log
+import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.Constants.API_KEY
 import com.udacity.asteroidradar.PictureOfDay
+import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
+import com.udacity.asteroidradar.database.asDatabaseModel
+import com.udacity.asteroidradar.database.asDomainModel
 import com.udacity.asteroidradar.database.getDatabase
-import com.udacity.asteroidradar.network.ImageOfDayNetworkService
+import com.udacity.asteroidradar.network.AsteroidNetworkService
 import com.udacity.asteroidradar.repository.AsteroidRepository
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 enum class ImageApiStatus { LOADING, ERROR, DONE }
+enum class FilterAsteroid { TODAY, WEEK, ALL }
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    private val _asteroids = MutableLiveData<MutableList<Asteroid>>()
-    val asteroids: LiveData<MutableList<Asteroid>> get() = _asteroids
+
+//    val asteroids = MutableLiveData<List<Asteroid>>()
 
     private val _imageOfDay = MutableLiveData<PictureOfDay?>()
     val imageOfDay: MutableLiveData<PictureOfDay?> get() = _imageOfDay
@@ -25,38 +29,45 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val navigateToDetailAsteroid: MutableLiveData<Asteroid?> get() = _navigateToDetailAsteroid
 
     private val _imageState = MutableLiveData<ImageApiStatus>()
+
     val imageState: LiveData<ImageApiStatus> get() = _imageState
 
+    private var _filterAsteroid = MutableLiveData(FilterAsteroid.ALL)
 
-//    private val database = getDatabase(application)
-//    private val asteroidRepository = AsteroidRepository(database)
 
+    private val database = getDatabase(application)
+    private val asteroidRepository = AsteroidRepository(database)
+
+    var asteroidList = Transformations.switchMap(_filterAsteroid) {
+        when (it!!) {
+            FilterAsteroid.WEEK -> asteroidRepository.weekAsteroids
+            FilterAsteroid.TODAY -> asteroidRepository.todayAsteroids
+            else -> asteroidRepository.allAsteroids
+        }
+    }
 
     init {
-        _asteroids.value = mutableListOf(
-            Asteroid(
-                id = 123,
-                closeApproachDate = "2022/8/8",
-                isPotentiallyHazardous = false,
-                codename = "mahmoud1",
-                absoluteMagnitude = 2.6,
-                estimatedDiameter = 1.6,
-                distanceFromEarth = 4.9,
-                relativeVelocity = 8.9
-            ),
-            Asteroid(
-                id = 123,
-                closeApproachDate = "555/5/8",
-                isPotentiallyHazardous = true,
-                codename = "mahmoud12",
-                absoluteMagnitude = 2.6,
-                estimatedDiameter = 1.6,
-                distanceFromEarth = 4.9,
-                relativeVelocity = 8.9
-            )
-        )
-        initializeImage()
+//        _asteroids.value = Transformations.switchMap(_filterAsteroid) { filter ->
+//            when (filter) {
+//                FilterAsteroid.WEEK -> asteroidRepository.weekAsteroids.value
+//                FilterAsteroid.TODAY -> asteroidRepository.todayAsteroids.value
+//                else -> asteroidRepository.allAsteroids.value
+//
+//            }
+//        }
 
+//        _asteroids.value = when (_filterAsteroid.value) {
+//            FilterAsteroid.WEEK -> asteroidRepository.weekAsteroids.value
+//            FilterAsteroid.TODAY -> asteroidRepository.todayAsteroids.value
+//            else -> asteroidRepository.allAsteroids.value
+//        }
+
+
+            initializeImage()
+    }
+
+    fun onChangeFilter(filter: FilterAsteroid) {
+        _filterAsteroid.value = filter
     }
 
 
@@ -74,14 +85,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             try {
                 _imageOfDay.value =
-                    ImageOfDayNetworkService.imageOfDayService.getImageAsync().await().let {
-                        PictureOfDay(
-                            mediaType = it.media_type,
-                            title = it.title,
-                            url = it.url
-                        )
-                    }
+                    AsteroidNetworkService.retrofitService.getImageDay(API_KEY)
                 _imageState.value = ImageApiStatus.DONE
+//                asteroidRepository.refreshAsteroids()
+                var asteroidss = AsteroidNetworkService.retrofitService.getAsteroids(API_KEY)
+                Log.i("TAG", "the json: $asteroidss")
+                val result = parseAsteroidsJsonResult(JSONObject(asteroidss))
+                asteroidList = asteroidRepository.allAsteroids
             } catch (e: Exception) {
                 _imageState.value = ImageApiStatus.ERROR
                 _imageOfDay.value = null

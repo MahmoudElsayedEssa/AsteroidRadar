@@ -21,6 +21,7 @@ class RefreshDataWork(appContext: Context, params: WorkerParameters) :
 
 
         return try {
+            asteroidRepository.refreshAsteroids()
             Result.success()
         } catch (e: HttpException) {
             Result.retry()
