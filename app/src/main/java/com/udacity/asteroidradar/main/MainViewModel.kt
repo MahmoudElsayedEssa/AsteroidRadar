@@ -1,19 +1,16 @@
 package com.udacity.asteroidradar.main
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants.API_KEY
 import com.udacity.asteroidradar.PictureOfDay
-import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
-import com.udacity.asteroidradar.database.asDatabaseModel
-import com.udacity.asteroidradar.database.asDomainModel
 import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.network.AsteroidNetworkService
 import com.udacity.asteroidradar.repository.AsteroidRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
+import kotlinx.coroutines.withContext
 
 enum class ImageApiStatus { LOADING, ERROR, DONE }
 enum class FilterAsteroid { TODAY, WEEK, ALL }
@@ -47,23 +44,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     init {
-//        _asteroids.value = Transformations.switchMap(_filterAsteroid) { filter ->
-//            when (filter) {
-//                FilterAsteroid.WEEK -> asteroidRepository.weekAsteroids.value
-//                FilterAsteroid.TODAY -> asteroidRepository.todayAsteroids.value
-//                else -> asteroidRepository.allAsteroids.value
-//
-//            }
-//        }
-
-//        _asteroids.value = when (_filterAsteroid.value) {
-//            FilterAsteroid.WEEK -> asteroidRepository.weekAsteroids.value
-//            FilterAsteroid.TODAY -> asteroidRepository.todayAsteroids.value
-//            else -> asteroidRepository.allAsteroids.value
-//        }
-
-
+        viewModelScope.launch {
+            asteroidRepository.refreshAsteroids()
             initializeImage()
+        }
     }
 
     fun onChangeFilter(filter: FilterAsteroid) {
@@ -79,19 +63,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _navigateToDetailAsteroid.value = asteroid
     }
 
-    private fun initializeImage() {
-        viewModelScope.launch {
+    private suspend fun initializeImage() {
+        withContext(Dispatchers.IO) {
             _imageState.value = ImageApiStatus.LOADING
 
             try {
                 _imageOfDay.value =
                     AsteroidNetworkService.retrofitService.getImageDay(API_KEY)
                 _imageState.value = ImageApiStatus.DONE
-//                asteroidRepository.refreshAsteroids()
-                var asteroidss = AsteroidNetworkService.retrofitService.getAsteroids(API_KEY)
-                Log.i("TAG", "the json: $asteroidss")
-                val result = parseAsteroidsJsonResult(JSONObject(asteroidss))
-                asteroidList = asteroidRepository.allAsteroids
             } catch (e: Exception) {
                 _imageState.value = ImageApiStatus.ERROR
                 _imageOfDay.value = null

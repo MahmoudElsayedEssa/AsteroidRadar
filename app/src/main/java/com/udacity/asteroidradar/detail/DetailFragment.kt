@@ -28,18 +28,7 @@ class DetailFragment : Fragment() {
         binding.helpButton.setOnClickListener {
             displayAstronomicalUnitExplanationDialog()
         }
-        val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.main_overflow_menu, menu)
-            }
 
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    else -> false
-                }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         return binding.root
     }
 
