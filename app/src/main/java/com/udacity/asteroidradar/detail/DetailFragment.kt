@@ -2,23 +2,22 @@ package com.udacity.asteroidradar.detail
 
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentDetailBinding
-import com.udacity.asteroidradar.main.MainFragment
-
-
 
 
 class DetailFragment : Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val binding = FragmentDetailBinding.inflate(inflater)
         binding.lifecycleOwner = this
 
@@ -29,7 +28,18 @@ class DetailFragment : Fragment() {
         binding.helpButton.setOnClickListener {
             displayAstronomicalUnitExplanationDialog()
         }
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.main_overflow_menu, menu)
+            }
 
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
         return binding.root
     }
 

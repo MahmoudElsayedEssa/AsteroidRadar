@@ -30,7 +30,7 @@ class AsteroidAdapter(private val clickListener: AsteroidAdapterListener) :
             binding.apply {
                 asteroid = item
                 executePendingBindings()
-                this.clickListener = listener
+                clickListener = listener
             }
         }
 
