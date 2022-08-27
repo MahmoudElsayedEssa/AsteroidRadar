@@ -65,15 +65,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private suspend fun initializeImage() {
         withContext(Dispatchers.IO) {
-            _imageState.value = ImageApiStatus.LOADING
+            _imageState.postValue(ImageApiStatus.LOADING)
 
             try {
-                _imageOfDay.value =
-                    AsteroidNetworkService.retrofitService.getImageDay(API_KEY)
-                _imageState.value = ImageApiStatus.DONE
+                _imageOfDay.postValue(AsteroidNetworkService.retrofitService.getImageDay(API_KEY))
+
+                _imageState.postValue(ImageApiStatus.DONE)
             } catch (e: Exception) {
-                _imageState.value = ImageApiStatus.ERROR
-                _imageOfDay.value = null
+                _imageState.postValue(ImageApiStatus.ERROR)
+                _imageOfDay.postValue(null)
             }
         }
     }

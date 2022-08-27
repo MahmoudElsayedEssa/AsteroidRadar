@@ -50,14 +50,6 @@ class MainFragment : Fragment() {
 
         }
 
-        val picasso = Picasso.get()
-        asteroidViewModel.imageOfDay.observe(viewLifecycleOwner) { pic ->
-            if (pic != null) {
-                picasso.load(pic.url).into(binding.activityMainImageOfTheDay)
-                binding.activityMainImageOfTheDay.contentDescription = pic.title
-            }
-        }
-
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

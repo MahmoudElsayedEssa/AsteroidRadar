@@ -8,7 +8,7 @@ import com.udacity.asteroidradar.Asteroid
 @Dao
 interface AsteroidDoe {
 
-    @Query("select * from asteroid_table ORDER BY closeApproachDate DESC")
+    @Query("SELECT * FROM asteroid_table ORDER BY closeApproachDate DESC")
     fun getAsteroids(): LiveData<List<Asteroid>>
 
     @Query("SELECT * FROM asteroid_table WHERE closeApproachDate = :startDate ORDER BY closeApproachDate DESC")
@@ -21,7 +21,7 @@ interface AsteroidDoe {
     fun insertAll(vararg asteroids: Asteroid)
 }
 
-@Database(entities = [Asteroid::class], version = 1)
+@Database(entities = [Asteroid::class], version = 2, exportSchema = false)
 abstract class AsteroidDatabase : RoomDatabase() {
     abstract val dao: AsteroidDoe
 }

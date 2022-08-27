@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -43,8 +42,7 @@
             android:textColor="@color/default_text_color"
             app:layout_constraintEnd_toStartOf="@+id/potentially_hazardous_state"
             app:layout_constraintStart_toStartOf="@+id/codename"
-            app:layout_constraintTop_toBottomOf="@+id/codename"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/codename" />
 
         <ImageView
             android:id="@+id/potentially_hazardous_state"
@@ -52,12 +50,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:contentDescription="@{asteroid.codename}"
             android:src="@drawable/ic_status_normal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="@{asteroid.codename}"
-            app:statusIcon="@{asteroid.isPotentiallyHazardous}"
-            tools:srcCompat="@tools:sample/avatars" />
+            app:statusIcon="@{asteroid.isPotentiallyHazardous}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -18,7 +18,7 @@ class AsteroidRepository(private val database: AsteroidDatabase) {
 
     private val startDate = LocalDateTime.now()
 
-    private val endDate = LocalDateTime.now().minusDays(7)
+    private val endDate = startDate.minusDays(7)
 
     val allAsteroids: LiveData<List<Asteroid>> = database.dao.getAsteroids()
 
@@ -36,11 +36,9 @@ class AsteroidRepository(private val database: AsteroidDatabase) {
             try {
                 val asteroids = AsteroidNetworkService.retrofitService.getAsteroids(API_KEY)
                 val result = parseAsteroidsJsonResult(JSONObject(asteroids))
-                Log.i("TAG", "refreshAsteroids: $result")
                 database.dao.insertAll(*result.asDatabaseModel())
-                Log.d("Refresh Asteroids", "Success")
             } catch (err: Exception) {
-                Log.e("Failed: AsteroidRepFile", err.message.toString())
+                throw err
             }
         }
     }

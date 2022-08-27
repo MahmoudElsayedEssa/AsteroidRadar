@@ -40,9 +40,10 @@ object AsteroidNetworkService {
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .client(okHttpClient)
+        .client(okHttpClient)
+        .addConverterFactory(ScalarsConverterFactory.create())
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
-        .addConverterFactory(ScalarsConverterFactory.create())
         .build()
 
     val retrofitService: AsteroidService = retrofit.create(AsteroidService::class.java)
