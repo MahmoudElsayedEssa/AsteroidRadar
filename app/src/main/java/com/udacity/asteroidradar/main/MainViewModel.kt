@@ -3,7 +3,7 @@ package com.udacity.asteroidradar.main
 import android.app.Application
 import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
-import com.udacity.asteroidradar.Constants.API_KEY
+import com.udacity.asteroidradar.BuildConfig.NASA_API_KEY
 import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.network.AsteroidNetworkService
@@ -45,8 +45,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
-            asteroidRepository.refreshAsteroids()
-            initializeImage()
+
+            try {
+                asteroidRepository.refreshAsteroids()
+                initializeImage()
+            } catch (e: Exception) {
+                throw e
+            }
         }
     }
 
@@ -68,7 +73,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _imageState.postValue(ImageApiStatus.LOADING)
 
             try {
-                _imageOfDay.postValue(AsteroidNetworkService.retrofitService.getImageDay(API_KEY))
+                _imageOfDay.postValue(
+                    AsteroidNetworkService.retrofitService.getImageDay(
+                        NASA_API_KEY
+                    )
+                )
 
                 _imageState.postValue(ImageApiStatus.DONE)
             } catch (e: Exception) {

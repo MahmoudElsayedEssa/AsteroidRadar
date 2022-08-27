@@ -3,7 +3,7 @@ package com.udacity.asteroidradar.repository
 import android.util.Log
 import androidx.lifecycle.LiveData
 import com.udacity.asteroidradar.Asteroid
-import com.udacity.asteroidradar.Constants.API_KEY
+import com.udacity.asteroidradar.BuildConfig.NASA_API_KEY
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.database.AsteroidDatabase
 import com.udacity.asteroidradar.database.asDatabaseModel
@@ -34,7 +34,7 @@ class AsteroidRepository(private val database: AsteroidDatabase) {
     suspend fun refreshAsteroids() {
         withContext(Dispatchers.IO) {
             try {
-                val asteroids = AsteroidNetworkService.retrofitService.getAsteroids(API_KEY)
+                val asteroids = AsteroidNetworkService.retrofitService.getAsteroids(NASA_API_KEY)
                 val result = parseAsteroidsJsonResult(JSONObject(asteroids))
                 database.dao.insertAll(*result.asDatabaseModel())
             } catch (err: Exception) {
